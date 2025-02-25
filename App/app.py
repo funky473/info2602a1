@@ -116,9 +116,9 @@ def save_pokemon():
     data = request.json
     name = data['name']# type: ignore
     pokemonid=data['pokemon_id']# type: ignore
-    poky=Pokemon.query.filter_by(id=pokemonid)
+    poky=Pokemon.query.filter_by(id=pokemonid).first()
     if not poky:
-       return jsonify(error =f'Id {pokemonid} is not a valid pokemon id'), 400
+       return jsonify(error =f'{pokemonid} is not a valid pokemon id'), 400
     user.catch_pokemon(pokemonid,name)# type: ignore
     testing=UserPokemon.query.filter_by(userid=user.id,pokemon_id=pokemonid).first()# type: ignore
     return jsonify(message=f'{name} captured with id: {testing.id}'), 201# type: ignore
@@ -144,7 +144,7 @@ def update_pokemon(id):
   oldname = mypok.name
   mypok.name=data['name']# type: ignore
   db.session.commit()
-  return jsonify(f'{oldname} renamed to {mypok.name}' ), 201
+  return jsonify(message=f'{oldname} renamed to {mypok.name}' ), 201
 
 @app.route('//mypokemon/<int:id>', methods=['DELETE'])
 @jwt_required()
@@ -157,7 +157,7 @@ def del_pokemon(id):
   oldname = mypok.name
   db.session.delete(mypok)
   db.session.commit()
-  return jsonify(f'{oldname} released' ), 200
+  return jsonify(message=f'{oldname} released' ), 200
 
 @app.route('//mypokemon/<int:id>', methods=['GET'])
 @jwt_required()
